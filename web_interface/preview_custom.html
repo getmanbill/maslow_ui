@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>My Maslow CNC Interface - Preview</title>
+    <style>
+        /* Custom styling for preview */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .preview-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .custom-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .custom-header h1 {
+            margin: 0;
+            font-size: 2.2em;
+            font-weight: 300;
+        }
+        
+        .custom-header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+        }
+        
+        .navbar-custom {
+            background: #2c3e50;
+            padding: 15px 20px;
+            color: white;
+        }
+        
+        .nav-tabs {
+            background: #34495e;
+            padding: 0 20px;
+            margin: 0;
+            border-bottom: 3px solid #3498db;
+        }
+        
+        .nav-tab {
+            display: inline-block;
+            padding: 12px 20px;
+            color: #bdc3c7;
+            text-decoration: none;
+            border-radius: 8px 8px 0 0;
+            margin-right: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-tab.active {
+            background: #3498db;
+            color: white;
+        }
+        
+        .nav-tab:hover {
+            background: #4a6741;
+            color: white;
+        }
+        
+        .content-area {
+            padding: 30px;
+        }
+        
+        .status-panel {
+            background: #ecf0f1;
+            border-left: 4px solid #27ae60;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .btn-custom {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+        }
+        
+        .preview-note {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-container">
+        <!-- Custom Header -->
+        <div class="custom-header">
+            <h1>🔧 My Maslow CNC Router</h1>
+            <p>500mm × 500mm Work Area | FluidNC v3.0.x | Connected: 192.168.50.143</p>
+        </div>
+        
+        <!-- Navigation Bar -->
+        <div class="navbar-custom">
+            <strong>ESP3D WebUI</strong> - Custom Interface
+        </div>
+        
+        <!-- Tabs -->
+        <div class="nav-tabs">
+            <a href="#" class="nav-tab active">Main Control</a>
+            <a href="#" class="nav-tab">File Manager</a>
+            <a href="#" class="nav-tab">Settings</a>
+            <a href="#" class="nav-tab">Maslow Config</a>
+            <a href="#" class="nav-tab">Calibration</a>
+        </div>
+        
+        <!-- Content Area -->
+        <div class="content-area">
+            <div class="preview-note">
+                <strong>📋 Preview Mode:</strong> This shows what your customized interface could look like. The actual functionality would remain the same - just with better styling and your personal branding.
+            </div>
+            
+            <div class="status-panel">
+                <h3>🟢 Machine Status: Ready</h3>
+                <p><strong>Position:</strong> X: 0.00mm, Y: 0.00mm, Z: 0.00mm</p>
+                <p><strong>WiFi:</strong> Connected to bluecastleinn2_2.4 (100% signal)</p>
+                <p><strong>Last Updated:</strong> Just now</p>
+            </div>
+            
+            <h3>Quick Actions</h3>
+            <button class="btn-custom">🏠 Home All Axes</button>
+            <button class="btn-custom">🔓 Unlock Machine</button>
+            <button class="btn-custom">📁 Upload G-Code</button>
+            <button class="btn-custom">⚙️ Settings</button>
+            
+            <h3>What's Different?</h3>
+            <ul>
+                <li><strong>Custom Header:</strong> Shows your machine info and status at a glance</li>
+                <li><strong>Better Colors:</strong> Modern gradient backgrounds and consistent color scheme</li>
+                <li><strong>Improved Typography:</strong> Cleaner fonts and better spacing</li>
+                <li><strong>Visual Indicators:</strong> Color-coded status panels and hover effects</li>
+                <li><strong>Personal Branding:</strong> Your machine name and specifications</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html> 

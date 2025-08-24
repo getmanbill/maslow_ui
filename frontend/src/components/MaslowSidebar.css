@@ -1,0 +1,228 @@
+/* Sidebar Toggle Button */
+.sidebar-toggle {
+  position: fixed;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
+  border-right: none;
+  color: var(--text-primary);
+  padding: 1rem 0.8rem;
+  border-radius: 8px 0 0 8px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  min-width: 60px;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.3);
+}
+
+.sidebar-toggle:hover {
+  background: var(--button-hover);
+  border-color: var(--accent-blue);
+  transform: translateY(-50%) translateX(-5px);
+}
+
+.sidebar-toggle.open {
+  background: var(--accent-blue);
+  color: var(--bg-primary);
+  border-color: var(--accent-blue);
+}
+
+.toggle-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.toggle-text {
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* Sidebar */
+.maslow-sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 400px;
+  height: 100vh;
+  background: var(--bg-secondary);
+  border-left: 2px solid var(--border-color);
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.4);
+}
+
+.maslow-sidebar.open {
+  transform: translateX(0);
+}
+
+/* Sidebar Header */
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  background: var(--bg-primary);
+  border-bottom: 2px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.sidebar-header h3 {
+  color: var(--accent-blue);
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 0;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.close-btn {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: all 0.2s;
+}
+
+.close-btn:hover {
+  background: var(--accent-red);
+  border-color: var(--accent-red);
+  color: var(--bg-primary);
+}
+
+/* Sidebar Content */
+.sidebar-content {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+/* Overlay */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  transition: opacity 0.3s ease;
+}
+
+/* Adjust MaslowControls inside sidebar */
+.sidebar-content .maslow-controls {
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.sidebar-content .controls-header {
+  display: none; /* Header is already in sidebar-header */
+}
+
+.sidebar-content .command-grid {
+  gap: 1rem;
+}
+
+.sidebar-content .maslow-btn {
+  padding: 1rem;
+  font-size: 0.9rem;
+}
+
+.sidebar-content .emergency-section {
+  margin-top: 2rem;
+}
+
+.sidebar-content .section-divider {
+  margin-bottom: 1rem;
+}
+
+/* Custom scrollbar for sidebar content */
+.sidebar-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sidebar-content::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+  border-radius: 4px;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb:hover {
+  background: var(--border-highlight);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .maslow-sidebar {
+    width: 320px;
+  }
+  
+  .sidebar-content {
+    padding: 1.5rem;
+  }
+  
+  .sidebar-header {
+    padding: 1rem 1.5rem;
+  }
+  
+  .sidebar-header h3 {
+    font-size: 1rem;
+  }
+  
+  .sidebar-toggle {
+    padding: 0.8rem 0.6rem;
+    min-width: 50px;
+  }
+  
+  .toggle-icon {
+    font-size: 1rem;
+  }
+  
+  .toggle-text {
+    font-size: 0.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .maslow-sidebar {
+    width: 100vw;
+  }
+  
+  .sidebar-toggle {
+    right: 1rem;
+    border-radius: 8px;
+    border: 2px solid var(--border-color);
+  }
+}
+
+/* Animation for smooth opening */
+@media (prefers-reduced-motion: reduce) {
+  .maslow-sidebar,
+  .sidebar-toggle {
+    transition: none;
+  }
+} 

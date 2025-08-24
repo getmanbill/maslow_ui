@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Maslow CNC Control Interface</title>
+    <style>
+        body {
+            font-family: 'Roboto Mono', 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 10px;
+            font-size: 14px;
+        }
+        
+        .cnc-container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            grid-template-rows: 60px 1fr;
+            gap: 15px;
+            height: 100vh;
+            max-height: 100vh;
+        }
+        
+        /* Header */
+        .header {
+            grid-column: 1 / -1;
+            background: linear-gradient(90deg, #2c5530 0%, #1e3a8a 100%);
+            border-radius: 8px;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .machine-status {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        .status-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .status-label {
+            font-size: 11px;
+            color: #a0a0a0;
+            margin-bottom: 2px;
+        }
+        
+        .status-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #00ff88;
+        }
+        
+        .connection-status {
+            background: #0f5132;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+        
+        /* Main Control Area */
+        .main-control {
+            background: #2a2a2a;
+            border-radius: 12px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        /* Jog Controls */
+        .jog-section {
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            color: #4a9eff;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #404040;
+            padding-bottom: 5px;
+        }
+        
+        .jog-controls {
+            display: grid;
+            grid-template-columns: 1fr 80px 1fr;
+            grid-template-rows: repeat(3, 60px);
+            gap: 8px;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+        
+        .jog-btn {
+            background: #3a3a3a;
+            border: 2px solid #555;
+            color: #e0e0e0;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .jog-btn:hover {
+            background: #4a4a4a;
+            border-color: #4a9eff;
+        }
+        
+        .jog-btn:active {
+            background: #4a9eff;
+        }
+        
+        .jog-distance {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .distance-btn {
+            background: #404040;
+            border: 1px solid #666;
+            color: #e0e0e0;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .distance-btn.active {
+            background: #4a9eff;
+            border-color: #4a9eff;
+        }
+        
+        /* File Controls */
+        .file-section {
+            margin-bottom: 25px;
+        }
+        
+        .file-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .btn-primary {
+            background: #1e40af;
+            border: none;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+        
+        .btn-success {
+            background: #059669;
+            border: none;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .btn-danger {
+            background: #dc2626;
+            border: none;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        /* Right Panel */
+        .right-panel {
+            background: #2a2a2a;
+            border-radius: 12px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .position-display {
+            background: #1a1a1a;
+            border: 2px solid #404040;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .axis-position {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            font-size: 16px;
+        }
+        
+        .axis-label {
+            color: #4a9eff;
+            font-weight: bold;
+        }
+        
+        .axis-value {
+            color: #00ff88;
+            font-family: 'Roboto Mono', monospace;
+        }
+        
+        .console {
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 15px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 12px;
+            color: #00ff00;
+        }
+        
+        .console-line {
+            margin: 2px 0;
+        }
+        
+        .emergency-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="cnc-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="machine-status">
+                <div class="status-item">
+                    <div class="status-label">STATUS</div>
+                    <div class="status-value">READY</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">X POSITION</div>
+                    <div class="status-value">0.000mm</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">Y POSITION</div>
+                    <div class="status-value">0.000mm</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">Z POSITION</div>
+                    <div class="status-value">0.000mm</div>
+                </div>
+            </div>
+            <div class="connection-status">
+                🟢 Connected: bluecastleinn2_2.4
+            </div>
+        </div>
+        
+        <!-- Main Control Area -->
+        <div class="main-control">
+            <!-- Jog Controls -->
+            <div class="jog-section">
+                <div class="section-title">🎮 MANUAL CONTROL</div>
+                
+                <div class="jog-controls">
+                    <div></div>
+                    <button class="jog-btn">▲<br>Y+</button>
+                    <div></div>
+                    
+                    <button class="jog-btn">◄<br>X-</button>
+                    <button class="jog-btn">🏠<br>HOME</button>
+                    <button class="jog-btn">►<br>X+</button>
+                    
+                    <div></div>
+                    <button class="jog-btn">▼<br>Y-</button>
+                    <div></div>
+                </div>
+                
+                <div class="jog-distance">
+                    <button class="distance-btn">0.1</button>
+                    <button class="distance-btn">1</button>
+                    <button class="distance-btn active">10</button>
+                    <button class="distance-btn">100</button>
+                </div>
+                
+                <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
+                    <button class="jog-btn" style="width: 80px;">Z+</button>
+                    <button class="jog-btn" style="width: 80px;">Z-</button>
+                </div>
+            </div>
+            
+            <!-- File Controls -->
+            <div class="file-section">
+                <div class="section-title">📁 FILE MANAGEMENT</div>
+                <div class="file-controls">
+                    <button class="btn-primary">📤 Upload G-Code</button>
+                    <button class="btn-primary">📂 Browse Files</button>
+                </div>
+                <div style="background: #1a1a1a; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                    <strong>Current File:</strong> (No GCode loaded)
+                </div>
+            </div>
+            
+            <!-- Machine Controls -->
+            <div class="emergency-controls">
+                <button class="btn-success">▶️ START JOB</button>
+                <button class="btn-danger">⏹️ EMERGENCY STOP</button>
+            </div>
+        </div>
+        
+        <!-- Right Panel -->
+        <div class="right-panel">
+            <div class="section-title">📊 MACHINE STATUS</div>
+            
+            <div class="position-display">
+                <div class="axis-position">
+                    <span class="axis-label">X-AXIS:</span>
+                    <span class="axis-value">0.000 mm</span>
+                </div>
+                <div class="axis-position">
+                    <span class="axis-label">Y-AXIS:</span>
+                    <span class="axis-value">0.000 mm</span>
+                </div>
+                <div class="axis-position">
+                    <span class="axis-label">Z-AXIS:</span>
+                    <span class="axis-value">0.000 mm</span>
+                </div>
+            </div>
+            
+            <div class="section-title">💬 CONSOLE OUTPUT</div>
+            <div class="console">
+                <div class="console-line">[INFO] Machine Ready</div>
+                <div class="console-line">[INFO] WiFi Connected: 192.168.50.143</div>
+                <div class="console-line">[INFO] HTTP started on port 80</div>
+                <div class="console-line">[INFO] All motors detected</div>
+                <div class="console-line">[STATUS] Waiting for commands...</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
