@@ -71,7 +71,8 @@ const useMaslowAPI = () => {
     releaseTension: useCallback(() => apiCall('/maslow/release_tension', { method: 'POST' }), [apiCall]),
     findAnchors: useCallback(() => apiCall('/maslow/find_anchors', { method: 'POST' }), [apiCall]),
     test: useCallback(() => apiCall('/maslow/test', { method: 'POST' }), [apiCall]),
-    setZStop: useCallback(() => apiCall('/maslow/set_z_stop', { method: 'POST' }), [apiCall])
+    setZStop: useCallback(() => apiCall('/maslow/set_z_stop', { method: 'POST' }), [apiCall]),
+    restart: useCallback(() => apiCall('/restart', { method: 'POST' }), [apiCall])
   }
 
   // Configuration

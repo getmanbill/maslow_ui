@@ -269,16 +269,6 @@
   cursor: not-allowed;
 }
 
-.unlock-btn.loading {
-  opacity: 0.7;
-  animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 0.7; }
-  50% { opacity: 1; }
-}
-
 /* Responsive Design */
 @media (max-width: 768px) {
   .status-display {

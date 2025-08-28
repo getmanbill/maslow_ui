@@ -23,13 +23,6 @@
   letter-spacing: 2px;
 }
 
-.loading-indicator {
-  color: var(--accent-blue);
-  font-size: 0.9rem;
-  font-weight: bold;
-  animation: pulse 1.5s infinite;
-}
-
 .command-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -72,10 +65,6 @@
 .maslow-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
-}
-
-.maslow-btn.loading {
-  animation: loading-pulse 1.5s infinite;
 }
 
 /* Specific button styles */
@@ -238,28 +227,7 @@
   cursor: not-allowed;
 }
 
-.emergency-btn.loading {
-  animation: emergency-loading 1s infinite;
-}
-
 /* Animations */
-@keyframes loading-pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
-  }
-}
-
-@keyframes emergency-loading {
-  0%, 100% {
-    box-shadow: 0 0 5px currentColor;
-  }
-  50% {
-    box-shadow: 0 0 20px currentColor;
-  }
-}
 
 /* Responsive Design */
 @media (max-width: 768px) {

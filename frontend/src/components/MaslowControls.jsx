@@ -11,9 +11,9 @@ import {
 } from 'lucide-react'
 import './MaslowControls.css'
 
-const MaslowControls = ({ onCommand, disabled = false, loading = false }) => {
+const MaslowControls = ({ onCommand, disabled = false }) => {
   const handleCommand = (commandName, apiCall) => {
-    if (disabled || loading) return
+    if (disabled) return
     onCommand(commandName, apiCall)
   }
 
@@ -83,7 +83,6 @@ const MaslowControls = ({ onCommand, disabled = false, loading = false }) => {
     <div className="maslow-controls">
       <div className="controls-header">
         <h3>MASLOW COMMANDS</h3>
-        {loading && <div className="loading-indicator">Processing...</div>}
       </div>
       
       {/* Maslow-specific commands */}
@@ -93,9 +92,9 @@ const MaslowControls = ({ onCommand, disabled = false, loading = false }) => {
           return (
             <button
               key={cmd.id}
-              className={`${cmd.className} ${loading ? 'loading' : ''}`}
+              className={`${cmd.className}`}
               onClick={() => handleCommand(cmd.id, cmd.id)}
-              disabled={disabled || loading}
+              disabled={disabled}
               title={cmd.description}
             >
               <span className="cmd-icon">
@@ -118,9 +117,9 @@ const MaslowControls = ({ onCommand, disabled = false, loading = false }) => {
             return (
               <button
                 key={cmd.id}
-                className={`${cmd.className} ${loading ? 'loading' : ''}`}
+                className={`${cmd.className}`}
                 onClick={() => handleCommand(cmd.id, cmd.id)}
-                disabled={loading}
+                disabled={false}
                 title={cmd.description}
               >
                 <span className="cmd-icon">

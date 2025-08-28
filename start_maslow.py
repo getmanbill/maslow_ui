@@ -23,6 +23,7 @@ class MaslowLauncher:
         self.backend_process = None
         self.frontend_process = None
         self.running = True
+        self.frontend_port = 3003  # Default port, will be updated from Vite output
         
     def check_dependencies(self):
         """Check if required dependencies are installed"""
@@ -121,15 +122,41 @@ class MaslowLauncher:
             universal_newlines=True
         )
         
-        # Wait for frontend to start
-        time.sleep(5)
-        print("✅ Frontend server started on http://localhost:3003")
+        # Wait for frontend to start and parse the port from output
+        frontend_started = False
+        start_time = time.time()
+        
+        while not frontend_started and time.time() - start_time < 30:  # 30 second timeout
+            line = self.frontend_process.stdout.readline()
+            if line:
+                print(f"[FRONTEND] {line.strip()}")
+                # Parse port from Vite output like "➜  Local:   http://localhost:3004/"
+                if "Local:" in line and "localhost:" in line:
+                    try:
+                        # Extract port from URL
+                        import re
+                        match = re.search(r'localhost:(\d+)', line)
+                        if match:
+                            self.frontend_port = int(match.group(1))
+                            print(f"🎯 Detected frontend port: {self.frontend_port}")
+                            frontend_started = True
+                    except (ValueError, AttributeError):
+                        pass
+            time.sleep(0.1)
+        
+        if not frontend_started:
+            print("⚠️ Frontend startup detection timed out, using default port 3003")
+            self.frontend_port = 3003
+        
+        print(f"✅ Frontend server started on http://localhost:{self.frontend_port}")
     
     def open_browser(self):
         """Open the interface in the default browser"""
         print("🌐 Opening browser...")
         time.sleep(2)
-        webbrowser.open("http://localhost:3000")
+        browser_url = f"http://localhost:{self.frontend_port}"
+        print(f"🔗 Opening: {browser_url}")
+        webbrowser.open(browser_url)
     
     def monitor_processes(self):
         """Monitor backend and frontend processes"""
@@ -189,7 +216,7 @@ class MaslowLauncher:
             
             print("\n" + "=" * 60)
             print("✅ Maslow interface is running!")
-            print("🌐 Frontend: http://localhost:3003")
+            print(f"🌐 Frontend: http://localhost:{self.frontend_port}")
             print("🔧 Backend API: http://localhost:8003")
             print("📡 WebSocket: ws://localhost:8003/ws")
             print("\nPress Ctrl+C to stop")

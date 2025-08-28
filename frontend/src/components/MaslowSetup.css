@@ -1,0 +1,321 @@
+.maslow-setup {
+  padding: 1rem;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+}
+
+.setup-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.setup-header h3 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.setup-message {
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.setup-message.success {
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.setup-message.error {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.setup-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.setup-section {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+.setup-section h4 {
+  margin: 0 0 1rem 0;
+  color: var(--accent-blue);
+  font-size: 0.95rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.form-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.form-group label input[type="radio"] {
+  margin-right: 0.5rem;
+}
+
+.form-group label input[type="number"],
+.form-group label select {
+  margin-left: auto;
+  min-width: 100px;
+  padding: 0.5rem;
+  background: var(--input-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+.form-group label input[type="number"]:focus,
+.form-group label select:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.form-group label input[type="number"]:disabled,
+.form-group label select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.field-description {
+  margin: 0.25rem 0 0 0;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  line-height: 1.4;
+}
+
+/* Radio button styling */
+.form-group label input[type="radio"] {
+  accent-color: var(--accent-blue);
+}
+
+.form-group label span {
+  flex: 1;
+}
+
+/* Select dropdown styling */
+.form-group label select {
+  cursor: pointer;
+}
+
+.form-group label select option {
+  background: var(--card-bg);
+  color: var(--text-primary);
+}
+
+/* Frame anchor position grid */
+.frame-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 1rem;
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--input-bg);
+}
+
+.anchor-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: var(--card-bg);
+}
+
+.anchor-label {
+  font-weight: 600;
+  color: var(--accent-blue);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.coordinate-inputs {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.coordinate-inputs label {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.coordinate-inputs input {
+  width: 80px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+  margin-left: 0 !important;
+  min-width: unset !important;
+}
+
+/* Arrange anchors to match physical layout */
+.frame-grid .anchor-group:nth-child(1) { /* Top-Left */
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.frame-grid .anchor-group:nth-child(2) { /* Top-Right */
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.frame-grid .anchor-group:nth-child(3) { /* Bottom-Left */
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.frame-grid .anchor-group:nth-child(4) { /* Bottom-Right */
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.setup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.setup-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 140px;
+  white-space: nowrap;
+}
+
+.setup-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.setup-btn.reset {
+  background: var(--card-bg);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.setup-btn.reset:hover:not(:disabled) {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+.setup-btn.preset {
+  background: var(--accent-orange, #f97316);
+  color: white;
+}
+
+.setup-btn.preset:hover:not(:disabled) {
+  background: #ea580c;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(249, 115, 22, 0.3);
+}
+
+.setup-btn.save {
+  background: var(--accent-blue);
+  color: white;
+}
+
+.setup-btn.save:hover:not(:disabled) {
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+}
+
+.setup-btn.restart {
+  background: var(--accent-purple, #8b5cf6);
+  color: white;
+}
+
+.setup-btn.restart:hover:not(:disabled) {
+  background: #7c3aed;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(139, 92, 246, 0.3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .maslow-setup {
+    padding: 0.75rem;
+  }
+  
+  .setup-section {
+    padding: 0.75rem;
+  }
+  
+  .form-group label {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .form-group label input[type="number"],
+  .form-group label select {
+    margin-left: 0;
+    width: 100%;
+    max-width: 200px;
+  }
+  
+  .setup-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .setup-btn {
+    justify-content: center;
+    min-width: unset;
+    width: 100%;
+  }
+} 

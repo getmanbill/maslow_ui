@@ -113,36 +113,47 @@ class SerialManager:
     def connect(self) -> bool:
         """Connect to the serial port"""
         try:
+            logger.info("🔌 Starting serial connection process...")
             port = self.find_serial_port()
             if not port:
-                logger.error("No serial port found")
+                logger.error("❌ No serial port found during connection attempt")
                 return False
             
+            logger.info(f"📡 Found serial port: {port}")
+            logger.info(f"⚙️ Connecting with baud rate: {BAUD_RATE}")
+            
             self.serial_port = serial.Serial(port, BAUD_RATE, timeout=1)
+            logger.info("⏳ Waiting for connection to settle...")
             time.sleep(2)  # Let connection settle
             
             # Clear buffers
+            logger.info("🧹 Clearing serial buffers...")
             self.serial_port.flushInput()
             self.serial_port.flushOutput()
             
             self.is_connected = True
             machine_status["connected"] = True
             machine_status["status"] = "Connected"
+            logger.info("✅ Serial connection flags updated")
             
             # Start reading thread
+            logger.info("🧵 Starting serial reading thread...")
             self.stop_reading = False
             self.read_thread = threading.Thread(target=self._read_serial, daemon=True)
             self.read_thread.start()
+            logger.info("✅ Serial reading thread started successfully")
             
-            logger.info(f"Connected to Maslow at {port}")
+            logger.info(f"🎉 Connected to Maslow at {port}")
             
             # Send initial status query
+            logger.info("❓ Sending initial status query...")
             self.send_command("?")
             
             return True
             
         except Exception as e:
-            logger.error(f"Failed to connect to serial port: {e}")
+            logger.error(f"💥 Failed to connect to serial port: {e}")
+            logger.exception("Serial connection exception details:")
             self.is_connected = False
             machine_status["connected"] = False
             machine_status["status"] = f"Connection Error: {e}"
@@ -201,17 +212,27 @@ class SerialManager:
     
     def _read_serial(self):
         """Continuously read from serial port"""
+        logger.info("🔄 Serial reading thread started")
+        read_count = 0
+        
         while not self.stop_reading and self.is_connected:
             try:
                 if self.serial_port and self.serial_port.in_waiting > 0:
                     data = self.serial_port.readline().decode('utf-8', errors='ignore').strip()
                     if data:
+                        read_count += 1
+                        if read_count % 10 == 0:  # Log every 10th read to avoid spam
+                            logger.debug(f"📊 Serial reads processed: {read_count}")
                         self._process_response(data)
                 else:
                     time.sleep(0.1)
             except Exception as e:
-                logger.error(f"Error reading serial: {e}")
+                logger.error(f"💥 Error reading serial: {e}")
+                logger.exception("Serial read exception details:")
                 break
+        
+        logger.info(f"🛑 Serial reading thread stopped. Total reads: {read_count}")
+        logger.info(f"📊 Stop reading: {self.stop_reading}, Connected: {self.is_connected}")
     
     def _process_response(self, response: str):
         """Process responses from Maslow"""
@@ -308,35 +329,81 @@ serial_manager = SerialManager()
 
 async def broadcast_message(message: Dict):
     """Broadcast message to all connected WebSocket clients"""
-    if connected_clients:
-        disconnected = []
-        for client in connected_clients:
-            try:
-                await client.send_json(message)
-            except:
-                disconnected.append(client)
+    if not connected_clients:
+        logger.debug("📡 No WebSocket clients connected for broadcast")
+        return
         
-        # Remove disconnected clients
+    logger.debug(f"📡 Broadcasting to {len(connected_clients)} clients: {message.get('type', 'unknown')}")
+    
+    disconnected = []
+    successful_sends = 0
+    
+    for client in connected_clients:
+        try:
+            await client.send_json(message)
+            successful_sends += 1
+        except Exception as e:
+            logger.warning(f"⚠️ Failed to send to WebSocket client: {e}")
+            disconnected.append(client)
+    
+    # Remove disconnected clients
+    if disconnected:
+        logger.info(f"🔌 Removing {len(disconnected)} disconnected WebSocket clients")
         for client in disconnected:
             connected_clients.remove(client)
+    
+    logger.debug(f"📊 Broadcast complete: {successful_sends} successful, {len(disconnected)} failed")
 
 # API Routes
 
 @app.on_event("startup")
 async def startup_event():
     """Initialize serial connection and start background tasks on startup"""
-    logger.info("Starting Maslow Serial Server...")
-    serial_manager.connect()
-    
-    # Start background tasks
-    asyncio.create_task(status_monitor())
-    asyncio.create_task(message_queue_processor())
+    try:
+        logger.info("🚀 Starting Maslow Serial Server startup sequence...")
+        logger.info(f"📡 Attempting to connect to serial port: {SERIAL_PORT}")
+        
+        # Connect to serial
+        connection_result = serial_manager.connect()
+        if connection_result:
+            logger.info("✅ Serial connection established successfully")
+        else:
+            logger.error("❌ Failed to establish serial connection")
+        
+        # Start background tasks
+        logger.info("🔄 Starting background tasks...")
+        
+        try:
+            status_task = asyncio.create_task(status_monitor())
+            logger.info("✅ Status monitor task created")
+        except Exception as e:
+            logger.error(f"❌ Failed to create status monitor task: {e}")
+            
+        try:
+            queue_task = asyncio.create_task(message_queue_processor())
+            logger.info("✅ Message queue processor task created")
+        except Exception as e:
+            logger.error(f"❌ Failed to create message queue processor task: {e}")
+        
+        logger.info("🎉 Startup sequence completed successfully")
+        
+    except Exception as e:
+        logger.error(f"💥 Critical error during startup: {e}")
+        logger.exception("Startup exception details:")
+        raise
 
 @app.on_event("shutdown")
 async def shutdown_event():
     """Clean up on shutdown"""
-    logger.info("Shutting down Maslow Serial Server...")
-    serial_manager.disconnect()
+    try:
+        logger.info("🛑 Shutting down Maslow Serial Server...")
+        logger.info("📡 Disconnecting from serial port...")
+        serial_manager.disconnect()
+        logger.info("✅ Serial disconnection completed")
+        logger.info("🏁 Shutdown sequence completed")
+    except Exception as e:
+        logger.error(f"❌ Error during shutdown: {e}")
+        logger.exception("Shutdown exception details:")
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
@@ -524,11 +591,28 @@ async def set_z_origin():
         raise HTTPException(status_code=400, detail=str(e))
 
 @app.post("/api/unlock")
-async def unlock_machine():
-    """Unlock machine (clear alarms)"""
+async def unlock_maslow():
+    """Send unlock command ($X) to clear alarm state"""
     try:
-        responses = serial_manager.send_command("$X")
-        return {"success": True, "responses": responses}
+        if not serial_manager.is_connected:
+            raise HTTPException(status_code=400, detail="Not connected to Maslow")
+        
+        serial_manager.send_command("$X")
+        return {"success": True, "message": "Unlock command sent"}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@app.post("/api/restart")
+async def restart_maslow():
+    """Restart the Maslow to reload configuration"""
+    try:
+        if not serial_manager.is_connected:
+            raise HTTPException(status_code=400, detail="Not connected to Maslow")
+        
+        logger.info("🔄 Manual restart requested via API")
+        serial_manager.send_command("$ESP444=RESTART")
+        await asyncio.sleep(5)  # Give it more time to restart
+        return {"success": True, "message": "Maslow restart command sent"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -564,9 +648,24 @@ async def update_maslow_config(config_update: ConfigUpdate):
     """Update Maslow configuration"""
     try:
         config_file = CONFIG_DIR / "maslow.yaml"
+        
+        # Save to YAML file
+        logger.info("💾 Saving configuration to YAML file...")
         with open(config_file, 'w') as f:
             yaml.safe_dump(config_update.config, f, default_flow_style=False)
-        return {"success": True, "message": "Configuration updated"}
+        logger.info("✅ Configuration saved to file")
+        
+        # Restart Maslow to load new configuration
+        if serial_manager.is_connected:
+            try:
+                logger.info("🔄 Restarting Maslow to apply new configuration...")
+                serial_manager.send_command("$ESP444=RESTART", wait_time=1)
+                await asyncio.sleep(5)  # Give it time to restart
+                logger.info("✅ Maslow restarted - new configuration should be active")
+            except Exception as e:
+                logger.warning(f"⚠️ Failed to restart Maslow: {e}")
+        
+        return {"success": True, "message": "Configuration saved and Maslow restarted"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -620,31 +719,78 @@ async def upload_gcode_file(file: UploadFile = File(...)):
 # Status monitoring task
 async def status_monitor():
     """Periodically update machine status"""
-    while True:
-        if serial_manager.is_connected:
+    logger.info("📊 Status monitor task started")
+    update_count = 0
+    
+    try:
+        while True:
+            update_count += 1
+            
+            if serial_manager.is_connected:
+                try:
+                    logger.debug(f"❓ Sending status query #{update_count}")
+                    serial_manager.send_command("?", wait_time=0.5)
+                except Exception as e:
+                    logger.warning(f"⚠️ Failed to send status query: {e}")
+            else:
+                logger.debug(f"📊 Status update #{update_count}: Not connected")
+            
+            # Broadcast status update
             try:
-                serial_manager.send_command("?", wait_time=0.5)
-            except:
-                pass
-        
-        # Broadcast status update
-        await broadcast_message({
-            "type": "status_update",
-            "status": machine_status
-        })
-        
-        await asyncio.sleep(3)  # Update every 3 seconds
+                await broadcast_message({
+                    "type": "status_update",
+                    "status": machine_status
+                })
+                if update_count % 20 == 0:  # Log every 20th update (every minute)
+                    logger.debug(f"📡 Status broadcast #{update_count} sent")
+            except Exception as e:
+                logger.error(f"💥 Failed to broadcast status update: {e}")
+                logger.exception("Status broadcast exception:")
+            
+            await asyncio.sleep(3)  # Update every 3 seconds
+            
+    except asyncio.CancelledError:
+        logger.info("🛑 Status monitor task cancelled")
+        raise
+    except Exception as e:
+        logger.error(f"💥 Status monitor task crashed: {e}")
+        logger.exception("Status monitor exception details:")
+        raise
 
 # Message queue processor task
 async def message_queue_processor():
     """Process queued messages and broadcast to WebSocket clients"""
-    while True:
-        if serial_manager:
-            messages = serial_manager.get_queued_messages()
-            for message in messages:
-                await broadcast_message(message)
-        
-        await asyncio.sleep(0.1)  # Process queue every 100ms
+    logger.info("📬 Message queue processor task started")
+    processed_count = 0
+    
+    try:
+        while True:
+            if serial_manager:
+                messages = serial_manager.get_queued_messages()
+                if messages:
+                    logger.debug(f"📨 Processing {len(messages)} queued messages")
+                    
+                for message in messages:
+                    try:
+                        await broadcast_message(message)
+                        processed_count += 1
+                        
+                        if processed_count % 50 == 0:  # Log every 50 messages
+                            logger.debug(f"📊 Messages processed: {processed_count}")
+                            
+                    except Exception as e:
+                        logger.error(f"💥 Failed to broadcast message: {e}")
+                        logger.exception("Message broadcast exception:")
+            
+            await asyncio.sleep(0.1)  # Process queue every 100ms
+            
+    except asyncio.CancelledError:
+        logger.info("🛑 Message queue processor task cancelled")
+        raise
+    except Exception as e:
+        logger.error(f"💥 Message queue processor task crashed: {e}")
+        logger.exception("Message queue processor exception details:")
+        raise
 
 # Start background tasks
 # @app.on_event("startup")  # REMOVED - combined with main startup handler

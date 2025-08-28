@@ -31,7 +31,6 @@ function App() {
     spindle_speed: 0
   })
   
-  const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [serialMessages, setSerialMessages] = useState([])
 
@@ -102,30 +101,22 @@ function App() {
 
   // Connection handlers
   const handleConnect = useCallback(async () => {
-    setLoading(true)
-    setError(null)
     try {
       const result = await api.connect()
       console.log('Connected:', result)
     } catch (err) {
       setError(`Connection failed: ${err.message}`)
       console.error('Connection error:', err)
-    } finally {
-      setLoading(false)
     }
   }, [api])
 
   const handleDisconnect = useCallback(async () => {
-    setLoading(true)
-    setError(null)
     try {
       const result = await api.disconnect()
       console.log('Disconnected:', result)
     } catch (err) {
       setError(`Disconnect failed: ${err.message}`)
       console.error('Disconnect error:', err)
-    } finally {
-      setLoading(false)
     }
   }, [api])
 
@@ -136,16 +127,12 @@ function App() {
       return
     }
     
-    setLoading(true)
-    setError(null)
     try {
       const result = await api.jogAxis(axis, distance, feedRate)
       console.log('Jog result:', result)
     } catch (err) {
       setError(`Jog failed: ${err.message}`)
       console.error('Jog error:', err)
-    } finally {
-      setLoading(false)
     }
   }, [api, machineStatus.connected])
 
@@ -155,8 +142,6 @@ function App() {
       return
     }
     
-    setLoading(true)
-    setError(null)
     try {
       let result
       switch (axis) {
@@ -175,8 +160,6 @@ function App() {
     } catch (err) {
       setError(`${axis} Home failed: ${err.message}`)
       console.error(`${axis} Home error:`, err)
-    } finally {
-      setLoading(false)
     }
   }, [api, machineStatus.connected])
 
@@ -187,8 +170,6 @@ function App() {
       return
     }
     
-    setLoading(true)
-    setError(null)
     try {
       let result
       switch (commandName) {
@@ -226,8 +207,6 @@ function App() {
     } catch (err) {
       setError(`${commandName} failed: ${err.message}`)
       console.error(`${commandName} error:`, err)
-    } finally {
-      setLoading(false)
     }
   }, [api, machineStatus.connected])
 
@@ -237,8 +216,6 @@ function App() {
       return
     }
     
-    setLoading(true)
-    setError(null)
     try {
       let result
       switch (axis) {
@@ -257,8 +234,6 @@ function App() {
     } catch (err) {
       setError(`Set ${axis} Origin failed: ${err.message}`)
       console.error(`Set ${axis} Origin error:`, err)
-    } finally {
-      setLoading(false)
     }
   }, [api, machineStatus.connected])
 
@@ -323,7 +298,7 @@ function App() {
             onJog={handleJog}
             onHome={handleHome}
             onSetOrigin={handleSetOrigin}
-            disabled={!machineStatus.connected || loading}
+            disabled={!machineStatus.connected}
           />
         </div>
         
@@ -333,7 +308,6 @@ function App() {
             position={machineStatus.position} 
             feedRate={machineStatus.feed_rate}
             onUnlock={() => handleMaslowCommand('unlock')}
-            loading={loading}
           />
         </div>
         
@@ -349,16 +323,9 @@ function App() {
       <MaslowSidebar
         onCommand={handleMaslowCommand}
         disabled={!machineStatus.connected}
-        loading={loading}
+        api={api}
       />
       
-      {/* Loading Overlay */}
-      {loading && (
-        <div className="loading-overlay">
-          <div className="loading-spinner"></div>
-          <div className="loading-text">Processing...</div>
-        </div>
-      )}
     </div>
   )
 }

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { Unlock } from 'lucide-react'
 import './StatusDisplay.css'
 
-const StatusDisplay = ({ status, position, feedRate, onUnlock, loading }) => {
+const StatusDisplay = ({ status, position, feedRate, onUnlock }) => {
   // Add logging to track status updates
   useEffect(() => {
     console.log('StatusDisplay - Props updated:', {
@@ -54,9 +54,8 @@ const StatusDisplay = ({ status, position, feedRate, onUnlock, loading }) => {
             <span>⚠️ Machine is in alarm state and needs to be unlocked</span>
           </div>
           <button 
-            className={`unlock-btn ${loading ? 'loading' : ''}`}
+            className="unlock-btn"
             onClick={onUnlock}
-            disabled={loading}
             title="Send $X command to clear alarm state"
           >
             <Unlock size={16} />
